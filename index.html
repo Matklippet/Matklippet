@@ -188,3 +188,21 @@ document
         store: document.getElementById("store").value,
         price: document.getElementById("price").value
     }
+ );
+
+    saveDeals();
+    renderDeals();
+
+    document
+    .getElementById("modal")
+    .classList.add("hidden");
+
+    e.target.reset();
+});
+
+renderDeals();
+
+</script>
+
+</body>
+</html>
