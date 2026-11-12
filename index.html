@@ -1,8 +1,9 @@
-
+<!DOCTYPE html>
 <html lang="sv">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>MatKlippet</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
@@ -16,38 +17,60 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 
 <header class="bg-emerald-600 text-white shadow">
     <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+
         <h1 class="text-3xl font-bold">
             Mat<span class="text-yellow-300">Klippet</span>
         </h1>
 
-        <button id="showForm"
-                class="bg-yellow-400 text-black px-4 py-2 rounded-lg font-semibold">
+        <button
+            id="showForm"
+            class="bg-yellow-400 hover:bg-yellow-300 text-black px-4 py-2 rounded-lg font-semibold">
             Rapportera erbjudande
         </button>
+
     </div>
 </header>
 
 <main class="max-w-6xl mx-auto p-4">
 
-    <input
-        id="searchInput"
-        type="text"
-        placeholder="Sök produkt..."
-        class="w-full p-3 border rounded-lg mb-6">
+    <div class="grid md:grid-cols-2 gap-4 mb-6">
 
-    <div id="dealsGrid"
-         class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <input
+            id="searchInput"
+            type="text"
+            placeholder="Sök produkt eller butik..."
+            class="w-full p-3 border rounded-lg">
+
+        <select
+            id="categoryFilter"
+            class="w-full p-3 border rounded-lg">
+
+            <option value="">Alla kategorier</option>
+            <option value="Mejeri">Mejeri</option>
+            <option value="Skafferi">Skafferi</option>
+            <option value="Dryck">Dryck</option>
+            <option value="Kött">Kött</option>
+            <option value="Frukt & Grönt">Frukt & Grönt</option>
+
+        </select>
+
+    </div>
+
+    <div
+        id="dealsGrid"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     </div>
 
 </main>
 
-<div id="modal"
-     class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+<div
+    id="modal"
+    class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
 
-    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+    <div class="bg-white rounded-xl p-6 w-full max-w-md">
 
         <h2 class="text-xl font-bold mb-4">
-            Nytt erbjudande
+            Rapportera nytt erbjudande
         </h2>
 
         <form id="dealForm">
@@ -66,18 +89,44 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
                 class="w-full border p-2 rounded mb-3"
                 required>
 
+            <select
+                id="category"
+                class="w-full border p-2 rounded mb-3">
+
+                <option value="Mejeri">Mejeri</option>
+                <option value="Skafferi">Skafferi</option>
+                <option value="Dryck">Dryck</option>
+                <option value="Kött">Kött</option>
+                <option value="Frukt & Grönt">Frukt & Grönt</option>
+
+            </select>
+
             <input
                 id="price"
                 type="number"
                 step="0.01"
-                placeholder="Pris"
+                placeholder="Extrapris"
                 class="w-full border p-2 rounded mb-3"
                 required>
 
+            <input
+                id="originalPrice"
+                type="number"
+                step="0.01"
+                placeholder="Ordinarie pris"
+                class="w-full border p-2 rounded mb-3">
+
+            <input
+                id="image"
+                type="text"
+                placeholder="Bildadress (valfri)"
+                class="w-full border p-2 rounded mb-4">
+
             <button
-                type="submit"
-                class="w-full bg-emerald-600 text-white p-2 rounded">
-                Spara
+                class="w-full bg-emerald-600 hover:bg-emerald-700 text-white p-3 rounded">
+
+                Spara erbjudande
+
             </button>
 
         </form>
@@ -88,67 +137,224 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 
 <script>
 
-let deals = JSON.parse(localStorage.getItem("matklippet")) || [
-    {
-        title: "Gevalia Kaffe",
-        store: "Willys",
-        price: 39.90
-    },
-    {
-        title: "Bregott 600g",
-        store: "ICA Maxi",
-        price: 49.90
-    },
-    {
-        title: "Kycklingfilé 1kg",
-        store: "Coop",
-        price: 79.90
-    }
+const defaultImage =
+"https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200";
+
+let deals = JSON.parse(
+    localStorage.getItem("matklippet")
+) || [
+
+{
+    id: 1,
+    title: "Gevalia Kaffe 500g",
+    store: "Willys",
+    category: "Skafferi",
+    price: 39.90,
+    originalPrice: 59.90,
+    image:
+    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1200",
+    likes: 12,
+    dislikes: 1,
+    date: "2026-11-12"
+},
+
+{
+    id: 2,
+    title: "Bregott 600g",
+    store: "ICA Maxi",
+    category: "Mejeri",
+    price: 49.90,
+    originalPrice: 69.90,
+    image:
+    "https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=1200",
+    likes: 8,
+    dislikes: 0,
+    date: "2026-11-12"
+},
+
+{
+    id: 3,
+    title: "Kycklingfilé 1kg",
+    store: "Coop",
+    category: "Kött",
+    price: 79.90,
+    originalPrice: 119.90,
+    image:
+    "https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=1200",
+    likes: 15,
+    dislikes: 2,
+    date: "2026-11-12"
+}
+
 ];
 
 function saveDeals() {
+
     localStorage.setItem(
         "matklippet",
         JSON.stringify(deals)
     );
 }
 
+function vote(id, type) {
+
+    const deal =
+    deals.find(d => d.id === id);
+
+    if (!deal) return;
+
+    if(type === "like") {
+        deal.likes++;
+    }
+
+    if(type === "dislike") {
+        deal.dislikes++;
+    }
+
+    saveDeals();
+    renderDeals();
+}
+
 function renderDeals() {
 
     const search =
-        document
-        .getElementById("searchInput")
-        .value
-        .toLowerCase();
+    document
+    .getElementById("searchInput")
+    .value
+    .toLowerCase();
+
+    const category =
+    document
+    .getElementById("categoryFilter")
+    .value;
 
     const grid =
-        document.getElementById("dealsGrid");
+    document
+    .getElementById("dealsGrid");
 
     grid.innerHTML = "";
 
     deals
-    .filter(d =>
-        d.title.toLowerCase().includes(search) ||
-        d.store.toLowerCase().includes(search)
-    )
+
+    .filter(deal => {
+
+        const matchesSearch =
+
+        deal.title.toLowerCase().includes(search) ||
+
+        deal.store.toLowerCase().includes(search);
+
+        const matchesCategory =
+
+        !category ||
+
+        deal.category === category;
+
+        return matchesSearch &&
+               matchesCategory;
+
+    })
+
     .forEach(deal => {
 
+        const discount =
+
+        deal.originalPrice
+
+        ? Math.round(
+
+            (
+                (deal.originalPrice - deal.price)
+
+                /
+
+                deal.originalPrice
+
+            ) * 100
+
+          )
+
+        : 0;
+
         grid.innerHTML += `
-            <div class="bg-white rounded-lg shadow p-4">
+
+        <div class="bg-white rounded-xl shadow overflow-hidden">
+
+            <div class="relative">
+
+                <img
+                    src="${deal.image || defaultImage}"
+                    class="w-full h-56 object-cover">
+
+                <span
+                    class="absolute top-3 right-3 bg-red-600 text-white px-3 py-1 rounded text-sm font-bold">
+
+                    -${discount}%
+
+                </span>
+
+            </div>
+
+            <div class="p-4">
+
                 <h3 class="font-bold text-lg">
                     ${deal.title}
                 </h3>
 
-                <p class="text-emerald-600">
+                <p class="text-emerald-600 font-semibold">
                     ${deal.store}
                 </p>
 
-                <p class="text-2xl font-bold text-red-600 mt-3">
-                    ${Number(deal.price).toFixed(2)} kr
+                <p class="text-sm text-gray-500 mb-3">
+                    ${deal.category}
                 </p>
+
+                <div class="mb-3">
+
+                    <span class="text-2xl text-red-600 font-bold">
+                        ${deal.price} kr
+                    </span>
+
+                    <span class="line-through text-gray-400 ml-2">
+                        ${deal.originalPrice} kr
+                    </span>
+
+                </div>
+
+                <div
+                    class="flex justify-between items-center text-sm text-gray-600">
+
+                    <span>
+                        ${deal.date}
+                    </span>
+
+                    <div class="flex gap-3">
+
+                        <button
+                            onclick="vote(${deal.id}, 'like')">
+
+                            👍 ${deal.likes}
+
+                        </button>
+
+                        <button
+                            onclick="vote(${deal.id}, 'dislike')">
+
+                            👎 ${deal.dislikes}
+
+                        </button>
+
+                    </div>
+
+                </div>
+
             </div>
+
+        </div>
+
         `;
     });
+
 }
 
 document
@@ -156,53 +362,4 @@ document
 .addEventListener("input", renderDeals);
 
 document
-.getElementById("showForm")
-.addEventListener("click", () => {
-
-    document
-    .getElementById("modal")
-    .classList.remove("hidden");
-
-});
-
-document
-.getElementById("modal")
-.addEventListener("click", e => {
-
-    if (e.target.id === "modal") {
-
-        document
-        .getElementById("modal")
-        .classList.add("hidden");
-    }
-});
-
-document
-.getElementById("dealForm")
-.addEventListener("submit", e => {
-
-    e.preventDefault();
-
-    deals.unshift({
-        title: document.getElementById("title").value,
-        store: document.getElementById("store").value,
-        price: document.getElementById("price").value
-    }
- );
-
-    saveDeals();
-    renderDeals();
-
-    document
-    .getElementById("modal")
-    .classList.add("hidden");
-
-    e.target.reset();
-});
-
-renderDeals();
-
-</script>
-
-</body>
-</html>
+.getElementById("
