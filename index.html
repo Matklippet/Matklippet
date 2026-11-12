@@ -1,26 +1,27 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MatKlippet</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MatKlippet</title>
 
-    <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.tailwindcss.com"></script>
 
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
 </head>
+
 <body class="bg-gray-100 min-h-screen">
 
 <header class="bg-emerald-600 text-white shadow">
-    <div class="max-w-6xl mx-auto p-4 flex justify-between items-center">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
         <h1 class="text-3xl font-bold">
             Mat<span class="text-yellow-300">Klippet</span>
         </h1>
 
         <button id="showForm"
-            class="bg-yellow-400 text-black px-4 py-2 rounded-lg font-semibold">
+                class="bg-yellow-400 text-black px-4 py-2 rounded-lg font-semibold">
             Rapportera erbjudande
         </button>
     </div>
@@ -28,8 +29,162 @@
 
 <main class="max-w-6xl mx-auto p-4">
 
-    <div class="mb-6">
-        <input
-            id="searchInput"
-            type="text"
-         
+    <input
+        id="searchInput"
+        type="text"
+        placeholder="Sök produkt..."
+        class="w-full p-3 border rounded-lg mb-6">
+
+    <div id="dealsGrid"
+         class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    </div>
+
+</main>
+
+<div id="modal"
+     class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+
+    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+
+        <h2 class="text-xl font-bold mb-4">
+            Nytt erbjudande
+        </h2>
+
+        <form id="dealForm">
+
+            <input
+                id="title"
+                type="text"
+                placeholder="Produkt"
+                class="w-full border p-2 rounded mb-3"
+                required>
+
+            <input
+                id="store"
+                type="text"
+                placeholder="Butik"
+                class="w-full border p-2 rounded mb-3"
+                required>
+
+            <input
+                id="price"
+                type="number"
+                step="0.01"
+                placeholder="Pris"
+                class="w-full border p-2 rounded mb-3"
+                required>
+
+            <button
+                type="submit"
+                class="w-full bg-emerald-600 text-white p-2 rounded">
+                Spara
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+
+let deals = JSON.parse(localStorage.getItem("matklippet")) || [
+    {
+        title: "Gevalia Kaffe",
+        store: "Willys",
+        price: 39.90
+    },
+    {
+        title: "Bregott 600g",
+        store: "ICA Maxi",
+        price: 49.90
+    },
+    {
+        title: "Kycklingfilé 1kg",
+        store: "Coop",
+        price: 79.90
+    }
+];
+
+function saveDeals() {
+    localStorage.setItem(
+        "matklippet",
+        JSON.stringify(deals)
+    );
+}
+
+function renderDeals() {
+
+    const search =
+        document
+        .getElementById("searchInput")
+        .value
+        .toLowerCase();
+
+    const grid =
+        document.getElementById("dealsGrid");
+
+    grid.innerHTML = "";
+
+    deals
+    .filter(d =>
+        d.title.toLowerCase().includes(search) ||
+        d.store.toLowerCase().includes(search)
+    )
+    .forEach(deal => {
+
+        grid.innerHTML += `
+            <div class="bg-white rounded-lg shadow p-4">
+                <h3 class="font-bold text-lg">
+                    ${deal.title}
+                </h3>
+
+                <p class="text-emerald-600">
+                    ${deal.store}
+                </p>
+
+                <p class="text-2xl font-bold text-red-600 mt-3">
+                    ${Number(deal.price).toFixed(2)} kr
+                </p>
+            </div>
+        `;
+    });
+}
+
+document
+.getElementById("searchInput")
+.addEventListener("input", renderDeals);
+
+document
+.getElementById("showForm")
+.addEventListener("click", () => {
+
+    document
+    .getElementById("modal")
+    .classList.remove("hidden");
+
+});
+
+document
+.getElementById("modal")
+.addEventListener("click", e => {
+
+    if (e.target.id === "modal") {
+
+        document
+        .getElementById("modal")
+        .classList.add("hidden");
+    }
+});
+
+document
+.getElementById("dealForm")
+.addEventListener("submit", e => {
+
+    e.preventDefault();
+
+    deals.unshift({
+        title: document.getElementById("title").value,
+        store: document.getElementById("store").value,
+        price: document.getElementById("price").value
+    }
